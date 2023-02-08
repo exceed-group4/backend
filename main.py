@@ -73,5 +73,8 @@ def updateFromHard(control: ControlHard):
         raise HTTPException(400, {"Detail": "Id not found"})
     if(type(status)!=int):
         raise HTTPException(400, {"Detail": "Not correct data"})
-    collection.update_one({"id": id}, {"$set": control.dict()})
-    return {"detail": "Update success"}
+    if find["mode"] == 2 :
+        collection.update_one({"id": id}, {"$set": control.dict()})
+        return {"detail": "Update success"}
+    else :
+        raise HTTPException(300, {"Detail": "mode auto"})
