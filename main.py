@@ -28,13 +28,13 @@ app.add_middleware(
 
 class ControlFront(BaseModel):
     id: int
-    mode: str
-    status: bool
+    mode: int # 1 : auto, 2 : manual
+    status: int # 0 : false, 1 : true
     light: int
 
 class ControlHard(BaseModel):
     id: int
-    status: bool
+    status: int # 0 : false, 1 : true
 
 @app.get("/")
 def root():
@@ -49,7 +49,7 @@ def updateFromFront(control: ControlFront):
     find = collection.find_one({"id": id})
     if(find is None):
         raise HTTPException(400, {"Detail": "Id not found"})
-    if((mode!="manual" and mode!="auto") or type(status)!=bool or light>255 or light<0):
+    if((mode!=1 and mode!=2) or type(status)!=int or light>255 or light<0):
         raise HTTPException(400, {"Detail": "Not correct data"})
     collection.update_one({"id": id}, {"$set": control.dict()})
     return {"detail": "Update success"}
@@ -71,7 +71,7 @@ def updateFromHard(control: ControlHard):
     find = collection.find_one({"id": id})
     if(find is None):
         raise HTTPException(400, {"Detail": "Id not found"})
-    if(type(status)!=bool):
+    if(type(status)!=int):
         raise HTTPException(400, {"Detail": "Not correct data"})
     collection.update_one({"id": id}, {"$set": control.dict()})
     return {"detail": "Update success"}
